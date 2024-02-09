@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/tadvi/dbf"
+	godbf "github.com/LindsayBradford/go-dbf/godbf"
 )
 
 var (
@@ -33,12 +33,12 @@ func main() {
 func deletarDbfCsv() {
 	filepath.Walk("./arquivosDbc", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Erro ao deletar os arquivos antes de iniciar o programa:", err)
 		}
 		if !info.IsDir() && (strings.HasSuffix(strings.ToUpper(info.Name()), ".DBF") || strings.HasSuffix(strings.ToUpper(info.Name()), ".CSV")) {
 			err := os.Remove(path)
 			if err != nil {
-				log.Fatal(err)
+				log.Fatal("Erro ao deletar os arquivos antes de iniciar o programa:", err)
 			}
 		}
 		return nil
@@ -49,12 +49,12 @@ func deletarDbfCsv() {
 func listarArquivosDbc() {
 	filepath.Walk("./arquivosDbc", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Erro ao listar os arquivos CSV:", err)
 		}
 		if !info.IsDir() && strings.HasSuffix(info.Name(), ".dbc") {
 			relativePath, err := filepath.Rel("./arquivosDbc", path)
 			if err != nil {
-				log.Fatal(err)
+				log.Fatal("Erro ao listar os arquivos CSV:", err)
 			}
 			arquivosDbc = append(arquivosDbc, relativePath)
 		}
@@ -74,37 +74,47 @@ func dbcParaDbf() {
 		cmd := exec.Command("/bin/sh", "-c", "cd blast-dbf/; ./blast-dbf ../arquivosDbc/"+nomeArquivo+" ../arquivosDbc/"+arquivoDbf)
 		err := cmd.Run()
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Erro ao transformar o arquivo DBF em DBC:", err)
 		}
 		fmt.Println(nomeArquivo + ": Arquivo convertido para DBF.")
 	}
 }
 
-// dbfParacsv transforma os arquivos DBF em CSV
+// dbfParacsv transforma os arquivos DBF em CSV utilizando a biblioteca go-dbf
 func dbfParacsv() {
 	for _, nomeArquivo := range arquivosDbc {
-		csvFile, err := os.Create("./arquivosDbc/" + strings.TrimSuffix(nomeArquivo, ".dbc") + ".csv")
+		caminhoDbf := "./arquivosDbc/" + strings.TrimSuffix(nomeArquivo, ".dbc") + ".dbf"
+		caminhoCsv := "./arquivosDbc/" + strings.TrimSuffix(nomeArquivo, ".dbc") + ".csv"
+
+		dbfTable, err := godbf.NewFromFile(caminhoDbf, "UTF-8")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		csvFile, err := os.Create(caminhoCsv)
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer csvFile.Close()
 
-		db, err := dbf.LoadFile("./arquivosDbc/" + strings.TrimSuffix(nomeArquivo, ".dbc") + ".dbf")
-		if err != nil {
-			log.Fatal(err)
+		w := csv.NewWriter(csvFile)
+		defer w.Flush()
+
+		headers := make([]string, len(dbfTable.Fields()))
+		for i, field := range dbfTable.Fields() {
+			headers[i] = field.Name()
+		}
+		if err := w.Write(headers); err != nil {
+			log.Fatal("Erro ao escrever cabeçalho no CSV:", err)
 		}
 
-		iter := db.NewIterator()
-		for iter.Next() {
-			registroDbf := iter.Row()
-			w := csv.NewWriter(csvFile)
-			defer w.Flush()
-
-			if err := w.Write(registroDbf); err != nil {
-				log.Fatal(err)
+		for i := 0; i < dbfTable.NumberOfRecords(); i++ {
+			row := dbfTable.GetRowAsSlice(i)
+			if err := w.Write(row); err != nil {
+				log.Fatal("Erro ao escrever registro no CSV:", err)
 			}
+			w.Flush() // Libera buffer após cada linha
 		}
-		db = nil
 
 		fmt.Println(nomeArquivo + ": Arquivo convertido para CSV.")
 	}

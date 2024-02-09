@@ -1,2 +1,9 @@
-github.com/tadvi/dbf v0.0.0-20160415171023-7f098c0fd31f h1:+isS5mZyEq9CSDLCkFsvTBUWiSGFw5/fSjHshznRidE=
-github.com/tadvi/dbf v0.0.0-20160415171023-7f098c0fd31f/go.mod h1:f/aSPpBjx2+lZG+YDs6owCeCmvsnu/Xa7HIJgZ5zhCg=
+github.com/LindsayBradford/go-dbf v1.0.0-aplha.4 h1:B/GGJW3GEBVhuLr0JLoWJnhglv2ZC5a17FjAtOlKrTc=
+github.com/LindsayBradford/go-dbf v1.0.0-aplha.4/go.mod h1:56pG8xuSp6+mnQ5lnYtCUezjmMFTKyboVPk7puy3c00=
+github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394 h1:OYA+5W64v3OgClL+IrOD63t4i/RW7RqrAVl9LTZ9UqQ=
+github.com/axgle/mahonia v0.0.0-20180208002826-3358181d7394/go.mod h1:Q8n74mJTIgjX4RBBcHnJ05h//6/k6foqmgE45jTQtxg=
+github.com/google/go-cmp v0.5.9 h1:O2Tfq5qg4qc4AmwVlvv0oLiVAGB7enBSJ2x2DqQFi38=
+github.com/onsi/gomega v1.27.6 h1:ENqfyGeS5AX/rlXDd/ETokDz93u0YufY1Pgxuy/PvWE=
+golang.org/x/net v0.8.0 h1:Zrh2ngAOFYneWTAIAPethzeaQLuHwhuBkuV6ZiRnUaQ=
+golang.org/x/text v0.8.0 h1:57P1ETyNKtuIjB4SRd15iJxuhj8Gc416Y78H3qgMh68=
+gopkg.in/yaml.v3 v3.0.1 h1:fxVm/GzAzEWqLHuvctI91KS9hhNmmWOoWu0XTYJS7CA=
